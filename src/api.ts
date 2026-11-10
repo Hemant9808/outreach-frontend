@@ -1,21 +1,10 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-export function getToken() {
-  return localStorage.getItem('token');
-}
-
-export function setToken(token: string | null) {
-  if (token) localStorage.setItem('token', token);
-  else localStorage.removeItem('token');
-}
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers);
   if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
-  const token = getToken();
-  if (token) headers.set('Authorization', `Bearer ${token}`);
 
   const res = await fetch(`${API_URL}${path}`, { ...options, headers });
   const data = await res.json().catch(() => ({}));
@@ -38,6 +27,80 @@ export type User = {
   resumeUrl?: string | null;
   resumeFilename?: string | null;
   timezone?: string;
+};
+
+export type EmailSettings = {
+  configured: boolean;
+  hasPassword: boolean;
+  host?: string;
+  port?: number;
+  secure?: boolean;
+  username?: string;
+  fromName?: string | null;
+  fromEmail?: string | null;
+  replyTo?: string | null;
+  verifiedAt?: string | null;
+  updatedAt?: string;
+};
+
+export const CONTACT_STATUSES = [
+  'NEW',
+  'CONTACTED',
+  'REPLIED',
+  'INTERVIEWING',
+  'OFFER',
+  'NOT_INTERESTED',
+  'DO_NOT_CONTACT',
+] as const;
+export type ContactStatus = (typeof CONTACT_STATUSES)[number];
+
+export const RECRUITER_TYPES = ['IN_HOUSE', 'AGENCY', 'FREELANCE', 'HIRING_MANAGER', 'UNKNOWN'] as const;
+export type RecruiterType = (typeof RECRUITER_TYPES)[number];
+
+export type Contact = {
+  id: number;
+  companyId: number | null;
+  company: { id: number; name: string; domain: string | null } | null;
+  name: string | null;
+  email: string;
+  phone: string | null;
+  position: string | null;
+  seniority: number | null;
+  department: string | null;
+  recruiterType: RecruiterType;
+  hiringFor: string[];
+  hiresForCompanies: string[];
+  location: string | null;
+  linkedin: string | null;
+  tags: string[];
+  notes: string | null;
+  source: string | null;
+  status: ContactStatus;
+  contactCount: number;
+  lastContactedAt: string | null;
+  createdAt: string;
+};
+
+export type CompanySummary = {
+  id: number;
+  name: string;
+  domain: string | null;
+  industry: string | null;
+  location: string | null;
+  contactCount: number;
+  contactedCount: number;
+  repliedCount: number;
+  lastContactedAt: string | null;
+  hiringFor: string[];
+};
+
+export type McpSettings = {
+  enabled: boolean;
+  key: string | null;
+  keySource: 'settings' | 'env' | null;
+  publicUrl: string | null;
+  lastUsedAt: string | null;
+  tools?: { name: string; description: string; readOnly: boolean; destructive: boolean }[];
 };
 
 export type CampaignListItem = {

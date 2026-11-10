@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../auth';
 
 export function Layout() {
-  const { user, logout } = useAuth();
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -53,15 +51,11 @@ export function Layout() {
             Leads
           </NavLink>
           <NavLink to="/campaigns">Campaigns</NavLink>
+          <NavLink to="/contacts">Contacts</NavLink>
           <NavLink to="/new">New batch</NavLink>
           <NavLink to="/profile">Profile & resume</NavLink>
+          <NavLink to="/settings">Settings</NavLink>
         </nav>
-        <div className="sidebar-foot">
-          <p>{user?.name}</p>
-          <button type="button" className="linkish" onClick={logout}>
-            Sign out
-          </button>
-        </div>
       </aside>
       <main className="main">
         <Outlet />
